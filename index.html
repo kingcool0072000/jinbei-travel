@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e8830f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="晋北自驾">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>晋北7天自驾·低强度版</title>
+<style>
+  :root{
+    --bg:#eef1f6; --panel:rgba(255,255,255,.88); --line:rgba(20,30,50,.10);
+    --txt:#1f2733; --txt-dim:#6b7686;
+    --accent:#e8830f; --drive:#ef7d00;
+    --sight:#1aa3e0; --food:#e8483f; --stay:#2faa5b; --transit:#7a5bd0;
+    --start:#2faa5b; --end:#e8483f;
+    --shadow:0 6px 24px rgba(20,30,50,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+  #map{position:absolute;inset:0;background:#e8edf3;z-index:1}
+  .amap-logo,.amap-copyright{opacity:.5}
+
+  .topbar{position:absolute;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:12px;padding:12px 18px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.45) 70%,transparent);pointer-events:none;flex-wrap:wrap}
+  .topbar > *{pointer-events:auto}
+  .brand{display:flex;flex-direction:column;line-height:1.25;max-width:360px}
+  .brand h1{font-size:17px;font-weight:700;letter-spacing:.4px}
+  .brand .sub{font-size:11px;color:var(--txt-dim);margin-top:3px}
+  .brand .tag{color:var(--accent);font-weight:600}
+  .spacer{flex:1}
+  .field{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px 11px;backdrop-filter:blur(12px);font-size:13px}
+  .field label{color:var(--txt-dim);font-size:11px}
+  .stepper{display:flex;align-items:center;gap:7px}
+  .stepper button{width:21px;height:21px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.04);color:var(--txt);cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .stepper button:hover{background:rgba(0,0,0,.10)}
+  .stepper .val{min-width:14px;text-align:center;font-weight:700;color:var(--accent)}
+  .field select{background:transparent;border:0;color:var(--txt);font-size:12px;font-weight:600;cursor:pointer;outline:none}
+  .filters{display:flex;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px;backdrop-filter:blur(12px)}
+  .filters button{border:0;background:transparent;color:var(--txt-dim);cursor:pointer;padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;transition:all .18s;display:flex;align-items:center;gap:5px}
+  .filters button .dot{width:8px;height:8px;border-radius:50%}
+  .filters button.on{background:rgba(0,0,0,.06);color:var(--txt)}
+
+  .sheet{position:absolute;left:14px;top:82px;bottom:14px;width:380px;z-index:900;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+  .sheet-head{padding:13px 16px 11px;border-bottom:1px solid var(--line)}
+  .sheet-head .endpoints{font-size:12px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .sheet-head .endpoints .chip{padding:2px 9px;border-radius:20px;color:#fff;font-size:11px}
+  .sheet-head .endpoints .chip.s{background:var(--start)} .sheet-head .endpoints .chip.e{background:var(--end)}
+  .sheet-head .endpoints .arr{color:var(--txt-dim);font-size:11px}
+  .sheet-head .desc{font-size:11px;color:var(--txt-dim);line-height:1.5}
+
+  .days{flex:1;overflow-y:auto;padding:9px 9px 14px}
+  .days::-webkit-scrollbar{width:6px}.days::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px}
+  .day{background:rgba(0,0,0,.02);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:all .18s}
+  .day:hover{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.18)}
+  .day.active{background:rgba(232,131,15,.10);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 4px 16px rgba(232,131,15,.18)}
+  .day-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+  .day-num{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--accent);color:#fff}
+  .day-title{font-size:13.5px;font-weight:600;flex:1;line-height:1.3}
+  .day-meta{font-size:10.5px;color:var(--txt-dim);margin-top:2px}
+  .day-body{font-size:12px;color:#3a4452;line-height:1.55}
+  .stops{margin-top:7px;display:flex;flex-direction:column;gap:4px}
+  .stop{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:#3a4452;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.03)}
+  .stop .cat{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+  .stop .cat.sight{background:var(--sight)} .stop .cat.food{background:var(--food)} .stop .cat.stay{background:var(--stay)} .stop .cat.transit{background:var(--transit)}
+  .stop b{color:var(--txt);font-weight:600}
+
+  /* 右侧列：路线明细 + 费用 */
+  .right-col{position:absolute;right:14px;top:82px;bottom:14px;width:262px;z-index:900;display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(16px);box-shadow:var(--shadow);overflow:hidden}
+  .card h4{font-size:11px;color:var(--txt-dim);font-weight:700;letter-spacing:.5px;padding:11px 14px 7px;display:flex;justify-content:space-between;align-items:center}
+  .card h4 .ppl{color:var(--accent);font-weight:700}
+  .card .body{padding:0 14px 12px;font-size:12px}
+  .seg-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px dashed var(--line);color:#3a4452}
+  .seg-row:last-child{border-bottom:0}
+  .seg-row .ic{font-size:13px;width:18px;text-align:center}
+  .seg-row .route{flex:1;font-size:11.5px;line-height:1.3}
+  .seg-row .route .ar{color:var(--txt-dim)}
+  .seg-row .km{font-size:11px;color:var(--txt-dim);text-align:right;white-space:nowrap}
+  .seg-row.drive .km{color:var(--drive);font-weight:700}
+  .seg-row.drive .route{color:var(--txt);font-weight:600}
+  .seg-total{margin-top:8px;padding-top:8px;border-top:1.5px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .seg-total .k{font-size:11px;color:var(--txt-dim)}
+  .seg-total .v{font-size:15px;font-weight:800;color:var(--drive)}
+  .seg-total .v small{font-size:10px;color:var(--txt-dim);font-weight:600}
+
+  .route-card{flex:0 1 auto;max-height:46%;overflow:hidden;display:flex;flex-direction:column}
+  .route-card .body{overflow-y:auto;flex:1 1 auto;min-height:0}
+  .route-card .body::-webkit-scrollbar{width:5px}.route-card .body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px}
+  .cost-card{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column}
+  .cost-card .body{overflow-y:auto}
+  .cost-card .body::-webkit-scrollbar{width:5px}.cost-card .body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px}
+  .cost-sec{margin-bottom:8px}
+  .cost-sec .hd{font-size:11px;font-weight:700;color:var(--txt);margin-bottom:3px;display:flex;justify-content:space-between}
+  .cost-sec .hd .sub{color:var(--txt-dim);font-weight:600}
+  .cost-line{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);padding:2px 0}
+  .cost-line .v{color:#3a4452}
+  .cost-sub{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);padding:3px 0 0;font-style:italic}
+  .cost-sub .v{color:var(--txt);font-weight:600;font-style:normal}
+  .cost-total{margin-top:6px;padding-top:8px;border-top:1.5px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .cost-total .k{font-size:12px;color:var(--txt-dim)}
+  .cost-total .v{font-size:18px;font-weight:800;color:var(--accent)}
+  .cost-note{font-size:10px;color:var(--txt-dim);margin-top:6px;line-height:1.4}
+
+  .amap-info-content{background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;color:var(--txt)!important}
+  .amap-info-sharp,.amap-info-sharp:after{background:#fff!important}
+  .iw{font-size:13px;line-height:1.5}.iw b{color:var(--accent)}.iw .cat{font-size:11px;color:var(--txt-dim);margin-top:3px}
+  .amap-text{border:0!important;background:transparent!important}
+
+  .zoom-ctrl{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:950;display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:5px;backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+  .zoom-ctrl button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.04);color:var(--txt);cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+  .zoom-ctrl button:hover{background:rgba(0,0,0,.10)}
+
+  @media (max-width:1080px){ .right-col{width:240px} .sheet{width:340px} }
+  @media (max-width:880px){ .right-col{display:none} }
+  /* ===== 手机端：底部标签栏切换 行程/路线/费用 ===== */
+  .mobi-tabs{display:none}
+  .mobi-tabs button{flex:1;padding:11px 0;background:var(--panel);border:0;border-top:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--txt-dim);cursor:pointer}
+  .mobi-tabs button.on{color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
+
+  @media (max-width:760px){
+    .topbar{padding:7px 8px;gap:6px;flex-wrap:wrap}
+    .brand{max-width:none;order:-1}
+    .brand .sub{display:none}
+    .brand h1{font-size:14px}
+    .spacer{display:none}
+    .field{padding:4px 8px;font-size:12px}
+    .field label{font-size:10px}
+    .filters{padding:3px;order:2}
+    .filters button{padding:5px 8px;font-size:11px}
+    .stepper button{width:24px;height:24px}
+    .mobi-tabs{display:flex;position:absolute;left:0;right:0;bottom:0;z-index:1000;backdrop-filter:blur(12px)}
+    .sheet,.right-col>.card{position:absolute;left:0;right:0;bottom:47px;top:auto;width:auto;max-width:100%;max-height:56vh;border-radius:16px 16px 0 0}
+    .right-col{display:block;position:static;background:none;border:0;box-shadow:none;gap:0;width:auto}
+    .right-col>.card{display:none}
+    .sheet{display:none}
+    .sheet.mobi-on,.right-col>.card.mobi-on{display:flex;flex-direction:column}
+    .route-card,.cost-card{max-height:56vh;flex:0 1 auto}
+    .zoom-ctrl{bottom:54px;left:auto;right:12px;transform:none;flex-direction:column}
+    .amap-logo,.amap-copyright{font-size:8px}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="zoom-ctrl"><button onclick="mapZoom(-1)" title="缩小">−</button><button onclick="mapZoom(1)" title="放大">＋</button></div>
+
+<div class="topbar">
+  <div class="brand">
+    <h1 id="docTitle">旅行规划 <span class="tag" id="docTag"></span></h1>
+    <div class="sub" id="subtitle"></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="field"><label>主题</label>
+    <select id="themeSel" onchange="setTheme(this.value)">
+      <option value="normal">标准</option><option value="whitesmoke">浅色</option>
+      <option value="fresh">清新</option><option value="grey">雅灰</option>
+      <option value="macaron">草橘</option><option value="dark">暗色</option>
+      <option value="darkblue">极夜蓝</option>
+    </select>
+  </div>
+  <div class="filters" id="filters">
+    <button class="on" data-cat="sight"><span class="dot" style="background:var(--sight)"></span>景点</button>
+    <button class="on" data-cat="food"><span class="dot" style="background:var(--food)"></span>美食</button>
+    <button class="on" data-cat="stay"><span class="dot" style="background:var(--stay)"></span>住宿</button>
+    <button class="on" data-cat="transit"><span class="dot" style="background:var(--transit)"></span>交通</button>
+  </div>
+  <div class="field" id="peopleField"></div>
+</div>
+
+<div class="sheet mobi-on" id="sheet">
+  <div class="sheet-head">
+    <div class="endpoints" id="endpoints"></div>
+    <div class="desc" id="intro"></div>
+  </div>
+  <div class="days" id="days"></div>
+</div>
+
+<div class="right-col">
+  <div class="card route-card" id="routeDetail">
+    <h4>路线明细 <span class="ppl" id="rdTotal"></span></h4>
+    <div class="body" id="rdBody"></div>
+  </div>
+  <div class="card cost-card" id="costCard">
+    <h4>费用估算 <span class="ppl" id="costPpl"></span></h4>
+    <div class="body" id="costBody"></div>
+  </div>
+</div>
+
+<div class="mobi-tabs">
+  <button class="on" onclick="mobiTab('sheet',this)">📍行程</button>
+  <button onclick="mobiTab('route',this)">🛣路线</button>
+  <button onclick="mobiTab('cost',this)">💰费用</button>
+</div>
+
+<script src="https://webapi.amap.com/maps?v=1.4.15&key=37d96a2ae26467837accb05ae2c688dd"></script>
+<script>
+/* ============================================================
+   PLAN DATA —— 生成时只改这一段
+   coord 一律 [纬度,经度]；模板内部自动转高德 [经度,纬度]
+   ============================================================ */
+const AMAP_KEY = '37d96a2ae26467837accb05ae2c688dd';
+const PLAN = {
+  title: "晋北7天自驾·低强度版",
+  tag: "· 不走回头路·不爬恒山",
+  subtitle: "北京→大同→浑源→代县→忻州→北京",
+  intro: "晋北7天6晚单向南下自驾：北京→大同→浑源→代县→忻州→回京，不走回头路、全程避开恒山登山线。适配65岁老人+10岁孩子，8月低强度：正午室内避暑、景区必买观光车、点餐少盐免辣。",
+  start: "beijing",           // 总起点 pointKey
+  end:   "beijing",           // 总终点 pointKey（环线与 start 相同）
+  points: {
+    beijing:{name:"北京",coord:[39.904,116.407]},
+    datong:{name:"大同",coord:[40.086,113.298]},
+    huayansi:{name:"华严寺",coord:[40.0865,113.2975]},
+    shanhua:{name:"善化寺",coord:[40.0833,113.2964]},
+    yungang:{name:"云冈石窟",coord:[40.110,113.133]},
+    datongbwg:{name:"大同博物馆",coord:[40.076,113.335]},
+    hunyuan:{name:"浑源",coord:[39.6956,113.7135]},
+    xuankong:{name:"悬空寺",coord:[39.6611,113.7158]},
+    yongan:{name:"永安寺",coord:[39.6953,113.7122]},
+    yuanjue:{name:"圆觉寺砖塔",coord:[39.6968,113.7180]},
+    yingxian:{name:"应县木塔",coord:[39.5599,113.1919]},
+    daixian:{name:"代县(代州)",coord:[39.0666,112.9585]},
+    yanmen:{name:"雁门关",coord:[39.1150,112.8400]},
+    bianjing:{name:"边靖楼",coord:[39.0670,112.9588]},
+    xinzhou:{name:"忻州",coord:[38.4166,112.7336]},
+    xiurong:{name:"忻州古城·秀容书院",coord:[38.4160,112.7342]},
+    hebian:{name:"河边民俗博物馆(阎锡山故居)",coord:[38.4833,112.8760]},
+    qicun:{name:"奇村温泉",coord:[38.5330,112.6170]},
+    baishi:{name:"白石山风景区",coord:[39.205,114.680]},
+    pingxing:{name:"平型关大捷纪念馆",coord:[39.150,114.164]},
+    datonghotel:{name:"全季大同大有广场酒店",coord:[40.0756,113.3031]},
+    deshoufu:{name:"德寿府(浑源古城店)",coord:[39.6960,113.7100]},
+    daixianhotel:{name:"代县辰际酒店(代州古城店)",coord:[39.0653,112.9656]},
+    xinzhouhotel:{name:"桔子忻州古城酒店",coord:[38.4166,112.7340]},
+  },
+  extras: ["baishi","pingxing"],  // 仅地图标记，不纳入行程规划
+  days: [
+    {n:1,title:"08.12 北京→大同",stay:"住 全季大同大有广场酒店",move:"北京→大同 约340km 4h",
+     body:"上午早出发避开出京拥堵；下午华严寺、善化寺（辽金古建，平地院落台阶少）；傍晚大同古城墙短途散步，不用绕城一圈；晚餐烧麦、刀削面。",
+     stops:[["transit","datong","北京→大同 约340km 4h"],["sight","huayansi","华严寺｜辽金古建平地院落"],["sight","shanhua","善化寺｜台阶少"],["food","datong","烧麦·刀削面"],["stay","datonghotel","全季大有广场｜连住2晚"]]},
+    {n:2,title:"08.13 大同全天·云冈+博物馆",stay:"住 全季大同大有广场酒店",move:"市内",
+     body:"08:00云冈石窟尽早入园、买观光电瓶车，只游核心洞窟量力而行；中午返回市区午餐+午休避暑；下午大同博物馆（室内凉爽，北魏历史，老少友好）。",
+     stops:[["sight","yungang","云冈石窟｜景区停车场+买观光车"],["sight","datongbwg","大同博物馆｜室内凉爽老少友好"],["stay","datonghotel","全季大有广场｜不换酒店"]]},
+    {n:3,title:"08.14 大同→浑源",stay:"住 德寿府(浑源古城店)",move:"大同→浑源 70km约1h10",
+     body:"上午悬空寺（抢到登临票可慢行参观，无票就在观景台远拍，不强求）；中午浑源县城午餐（凉粉备注免辣）；下午酒店午休；傍晚永安寺、圆觉寺砖塔（县城平地古迹，无需进山，不含恒山）。",
+     stops:[["transit","hunyuan","大同→浑源 70km约1h10"],["sight","xuankong","悬空寺｜登临票/观景台远拍"],["sight","yongan","永安寺｜县城平地古迹"],["sight","yuanjue","圆觉寺砖塔｜平地古迹"],["food","hunyuan","浑源凉粉｜备注免辣"],["stay","deshoufu","德寿府｜永安西街87号"]]},
+    {n:4,title:"08.15 浑源→应县木塔→代县",stay:"住 代县辰际酒店(代州古城店)",move:"浑源→应县→代县",
+     body:"取消浑源休整日，08:30一早出发；09:40应县木塔（佛宫寺释迦塔，平地参观，几乎无台阶）；午后代县用餐；下午雁门关，买观光车直达关城，仅游翁城、主关道，长城台阶选择性攀登不强求；晚上入住代县。",
+     stops:[["sight","yingxian","应县木塔｜平地参观几乎无台阶"],["sight","yanmen","雁门关｜观光车直达关城"],["stay","daixianhotel","代县辰际酒店｜代州古城店"]]},
+    {n:5,title:"08.16 代县→忻州",stay:"住 桔子忻州古城酒店",move:"代县→忻州 120km约1.5h",
+     body:"上午代县自由游览：边靖楼（楼下拍照即可，登楼自愿）、代县古城街巷闲逛；中午出发忻州；傍晚忻州古城漫步，秀容书院平缓游览，感受市井烟火。",
+     stops:[["sight","bianjing","边靖楼｜楼下拍照登楼自愿"],["transit","xinzhou","代县→忻州 120km约1.5h"],["sight","xiurong","忻州古城·秀容书院｜平缓游览"],["stay","xinzhouhotel","桔子忻州古城酒店｜第1晚"]]},
+    {n:6,title:"08.17 忻州深度游玩",stay:"住 桔子忻州古城酒店",move:"市内/近郊",
+     body:"二选一，根据体力挑选不用全走：方案A（人文）河边民俗博物馆（阎锡山故居，大院园林地势平坦）；方案B（休闲康养）奇村温泉，舒缓连日驾车疲劳；傍晚继续逛忻州古城，品尝当地小吃。",
+     stops:[["sight","hebian","河边民俗博物馆｜阎锡山故居地势平坦（方案A）"],["sight","qicun","奇村温泉｜舒缓驾车疲劳（方案B）"],["food","xinzhou","忻州古城小吃"],["stay","xinzhouhotel","桔子忻州古城酒店｜连住2晚"]]},
+    {n:7,title:"08.18 忻州→北京",stay:"返程",move:"忻州→北京 380km约4.5h",
+     body:"早上尽早出发避开午后返程高峰；沿途多次停靠休息，中午简单路餐，傍晚到家。",
+     stops:[["transit","beijing","忻州→北京 380km约4.5h"]]},
+  ],
+  stays: [                       // 住宿清单（费用估算）；nights=晚数, price=每晚
+    {name:"全季大同大有广场酒店", nights:2, price:1000},
+    {name:"德寿府(浑源古城店)", nights:1, price:600},
+    {name:"代县辰际酒店(代州古城店)", nights:1, price:600},
+    {name:"桔子忻州古城酒店", nights:2, price:900},
+  ],
+  segments: [                    // 城际交通段；drive=真实驾车路径(高亮+公里/时间)
+    {from:"beijing",to:"datong",mode:"drive",label:"约340km 4h"},
+    {from:"datonghotel",to:"yungang",mode:"drive",label:"酒店→云冈"},
+    {from:"datong",to:"hunyuan",mode:"drive",label:"70km 1h10"},
+    {from:"hunyuan",to:"yingxian",mode:"drive",label:"应县木塔"},
+    {from:"yingxian",to:"daixian",mode:"drive",label:"经雁门关"},
+    {from:"daixian",to:"xinzhou",mode:"drive",label:"120km 1.5h"},
+    {from:"xinzhou",to:"beijing",mode:"drive",label:"380km 4.5h"},
+  ],
+  transport: {                   // 电车：只算高速费+停车费
+    type:"ev",
+    tollPerKm:0.45,              // 高速费 元/km
+    parking:300,                 // 停车费（全程估算）
+  },
+  meals: 3500,                   // 餐饮总额（4人7天，随人数缩放）
+  mealsBase: 4,                  // 餐饮对应的基准人数
+  people: {adults:2, kids:1, elder:1},
+  costNote: "65岁老人+10岁孩子低强度出行；8月正午室内避暑，云冈/雁门关务必买观光车；点餐少盐免辣。交通为自驾油费+过路费（非租车）。",
+  theme: "fresh",                // 默认主题：normal/whitesmoke/fresh/grey/macaron/dark/darkblue
+};
+
+/* ============================================================
+   渲染逻辑 —— 以下固定，勿改
+   ============================================================ */
+const CAT_COLOR = {sight:"#1aa3e0", food:"#e8483f", stay:"#2faa5b", transit:"#7a5bd0"};
+const CAT_NAME  = {sight:"景点", food:"美食", stay:"住宿", transit:"交通"};
+const MODE_COLOR= {drive:"#ef7d00", rail:"#1aa3e0", flight:"#7a5bd0", walk:"#6b7686", ferry:"#2faa5b"};
+const MODE_NAME = {drive:"自驾", rail:"高铁/动车", flight:"飞机", walk:"打车/步行", ferry:"轮渡"};
+const MODE_ICON = {drive:"🚗", rail:"🚄", flight:"✈️", walk:"🚕", ferry:"⛴️"};
+
+let state = {activeDay:null, cats:{sight:true,food:true,stay:true,transit:true}, people:{...PLAN.people}};
+let map, infoWindow, markers={}, routePolylines=[], routeTexts=[], endpoints=[];
+let segInfo = (PLAN.segments||[]).map(s=>({from:s.from,to:s.to,mode:s.mode,label:s.label,km:null,dur:null,ok:s.mode!=='drive'}));
+
+const ll  = k => [PLAN.points[k].coord[1], PLAN.points[k].coord[0]];
+function fmtDur(min){ min=Math.round(min); if(min<60) return min+'min'; const h=Math.floor(min/60), m=min%60; return h+'h'+(m?String(m).padStart(2,'0')+'m':''); }
+
+function initMap(){
+  map = new AMap.Map('map',{zoom:7, center:[102.0,23.8], mapStyle:'amap://styles/'+(PLAN.theme||'fresh'), viewMode:'2D'});
+  infoWindow = new AMap.InfoWindow({offset:new AMap.Pixel(0,-6), closeWhenClickMap:true});
+  document.getElementById('themeSel').value = PLAN.theme||'fresh';
+}
+function setTheme(v){ if(map) map.setMapStyle('amap://styles/'+v); }
+function mapZoom(d){ if(!map) return; if(d>0) map.zoomIn(); else map.zoomOut(); }
+function mobiTab(name,btn){
+  document.querySelectorAll('.mobi-tabs button').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  document.getElementById('sheet').classList.toggle('mobi-on',name==='sheet');
+  document.getElementById('routeDetail').classList.toggle('mobi-on',name==='route');
+  document.getElementById('costCard').classList.toggle('mobi-on',name==='cost');
+}
+
+let _cbSeq=0;
+function jsonp(url, cb){
+  const fn='__amapcb_'+(++_cbSeq);
+  window[fn]=function(d){try{cb(d);}catch(e){console.error(e);}finally{delete window[fn];s.remove();}};
+  const s=document.createElement('script');
+  s.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+fn;
+  s.onerror=function(){cb(null);delete window[fn];s.remove();};
+  document.body.appendChild(s);
+}
+function addLine(path, opts){
+  const line=new AMap.Polyline(Object.assign({path:path,strokeColor:'#ef7d00',strokeWeight:6,strokeOpacity:.9,lineJoin:'round',lineCap:'round',showDir:true,zIndex:50},opts||{}));
+  map.add(line); routePolylines.push(line);
+}
+function clearRoutes(){ routePolylines.forEach(p=>map.remove(p)); routePolylines=[]; routeTexts.forEach(t=>map.remove(t)); routeTexts=[]; }
+
+function renderRoutes(){
+  clearRoutes();
+  const segs=PLAN.segments||[];
+  segs.forEach((s,i)=>{ if(s.mode!=='drive'){ const c=MODE_COLOR[s.mode]||'#888';
+    addLine([ll(s.from),ll(s.to)],{strokeColor:c,strokeWeight:3,strokeOpacity:.8,strokeStyle:'dashed',showDir:false,zIndex:40}); }});
+  const driveList=segs.map((s,i)=>({s,i})).filter(x=>x.s.mode==='drive');
+  if(!driveList.length){ renderRouteDetail(); renderCost(); map.setFitView(routePolylines.concat(endpoints),false,[80,80,80,80]); return; }
+  // 串行请求 + QPS超限自动重试，避开 CUQPS_HAS_EXCEEDED_THE_LIMIT
+  let ok=0, idx=0;
+  const isQps = d => d && /CUQPS|LIMIT|10021/i.test((d.info||'')+(d.infocode||''));
+  const driveOne = ()=>{
+    if(idx>=driveList.length){ console.log('[DR] drive ok',ok+'/'+driveList.length); renderRouteDetail(); renderCost(); map.setFitView(routePolylines.concat(endpoints),false,[80,80,80,80]); return; }
+    const {s,i}=driveList[idx];
+    const f=ll(s.from), t=ll(s.to);
+    const url=`https://restapi.amap.com/v3/direction/driving?origin=${f[0]},${f[1]}&destination=${t[0]},${t[1]}&key=${AMAP_KEY}&extensions=all&strategy=2`;
+    let attempts=0;
+    const tryOnce = ()=>{ jsonp(url,data=>{
+      if(data&&data.status==='1'&&data.route&&data.route.paths&&data.route.paths[0]){
+        ok++; const p=data.route.paths[0];
+        const path=[]; (p.steps||[]).forEach(st=>(st.polyline||'').split(';').forEach(pp=>{const c=pp.split(',');if(c.length===2)path.push([+c[0],+c[1]]);}));
+        if(path.length){
+          addLine(path,{strokeColor:MODE_COLOR.drive,strokeWeight:13,strokeOpacity:.16,strokeStyle:'solid',showDir:false,zIndex:48}); // 发光底层
+          addLine(path,{strokeColor:MODE_COLOR.drive,strokeWeight:6,strokeOpacity:.96,strokeStyle:'solid',showDir:true,zIndex:50}); // 主线
+          const mid=path[Math.floor(path.length/2)];
+          const km=(+p.distance/1000), m=(+p.duration/60);
+          const txt=new AMap.Text({text:`<span style="display:inline-block;background:#fff;border:1.5px solid ${MODE_COLOR.drive};color:${MODE_COLOR.drive};padding:2px 8px;border-radius:11px;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.18)">${km.toFixed(0)}km · ${fmtDur(m)}</span>`,
+            position:mid, anchor:'center', zIndex:60});
+          map.add(txt); routeTexts.push(txt);
+        }
+        segInfo[i].km=+p.distance/1000; segInfo[i].dur=+p.duration/60; segInfo[i].ok=true;
+        idx++; setTimeout(driveOne, 150); // 段间间隔，控 QPS
+      } else if((isQps(data)||!data) && attempts<4){
+        attempts++; setTimeout(tryOnce, 500*attempts); // QPS超限退避重试
+      } else {
+        segInfo[i].ok=false; console.warn('[DR] seg',i,'fail',data&&data.info);
+        idx++; setTimeout(driveOne, 150);
+      }
+    }); };
+    tryOnce();
+  };
+  driveOne();
+}
+
+function renderEndpoints(){
+  endpoints.forEach(e=>map.remove(e)); endpoints=[];
+  const sKey=PLAN.start, eKey=PLAN.end;
+  const sPt=PLAN.points[sKey], ePt=PLAN.points[eKey];
+  if(!sPt) return;
+  const same = (!eKey || eKey===sKey);
+  const make=(key,color,lab)=>new AMap.Marker({position:ll(key), anchor:'bottom',
+    content:`<div style="transform:translate(-50%,-100%);text-align:center;white-space:nowrap">
+      <div style="display:inline-block;background:${color};color:#fff;font-size:11px;font-weight:800;padding:3px 11px;border-radius:20px;box-shadow:0 3px 9px rgba(0,0,0,.32)">${lab} · ${PLAN.points[key].name}</div>
+      <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid ${color};margin:0 auto"></div></div>`,
+    offset:new AMap.Pixel(0,0), zIndex:70});
+  const m1=make(sKey, same?'#e8830f':'#2faa5b', same?'起/终点':'起点'); m1.on('click',()=>openInfoSimple(sKey)); map.add(m1); endpoints.push(m1);
+  if(!same && ePt){ const m2=make(eKey,'#e8483f','终点'); m2.on('click',()=>openInfoSimple(eKey)); map.add(m2); endpoints.push(m2); }
+}
+function openInfoSimple(key){ const c=PLAN.points[key]; if(!c) return;
+  infoWindow.setContent(`<div class="iw"><b>${c.name}</b><div class="cat">${PLAN.points[key]===PLAN.points[PLAN.start]?'起点':'途经'}</div></div>`);
+  infoWindow.open(map, ll(key));
+}
+
+function renderMarkers(){
+  Object.values(markers).forEach(m=>map.remove(m)); markers={};
+  const placed=new Set([PLAN.start, PLAN.end].filter(Boolean));
+  PLAN.days.forEach(d=>d.stops.forEach(s=>{
+    const [cat,key,label]=s;
+    if(!state.cats[cat]||placed.has(key)||!PLAN.points[key]) return;
+    placed.add(key);
+    const col=CAT_COLOR[cat];
+    const mk=new AMap.Marker({position:ll(key),
+      content:`<div style="transform:translate(-50%,-50%)"><div style="width:13px;height:13px;border-radius:50%;background:${col};border:2px solid #fff;box-shadow:0 0 0 2px ${col}66,0 2px 5px rgba(0,0,0,.35)"></div></div>`,
+      offset:new AMap.Pixel(0,0), anchor:'center', zIndex:55});
+    mk.on('click',()=>openInfo(key,cat,label,d.n));
+    map.add(mk); markers[key]=mk;
+  }));
+}
+function openInfo(key,cat,label,day){ const c=PLAN.points[key];
+  infoWindow.setContent(`<div class="iw"><b>${c.name}</b><div class="cat">Day${day} · ${CAT_NAME[cat]} ｜ ${label}</div></div>`);
+  infoWindow.open(map, ll(key));
+}
+
+function renderSheet(){
+  document.getElementById('docTitle').firstChild.textContent = PLAN.title+' ';
+  document.getElementById('docTag').textContent = PLAN.tag||'';
+  const pplTxt=`${state.people.adults}大${state.people.kids}小${state.people.elder?'+'+state.people.elder+'老':''}`;
+  document.getElementById('subtitle').textContent = `${pplTxt} · ${PLAN.subtitle}`;
+  document.getElementById('intro').textContent = PLAN.intro;
+  // 起终点
+  const sName=PLAN.points[PLAN.start]?.name||PLAN.start;
+  const eName=PLAN.points[PLAN.end]?.name||PLAN.end||sName;
+  const same = (!PLAN.end || PLAN.end===PLAN.start);
+  document.getElementById('endpoints').innerHTML = same
+    ? `<span class="chip s">起/终点</span> ${sName}`
+    : `<span class="chip s">起点</span> ${sName} <span class="arr">→</span> <span class="chip e">终点</span> ${eName}`;
+  // days
+  const daysEl=document.getElementById('days');
+  daysEl.innerHTML=PLAN.days.map(d=>{
+    const stops=d.stops.filter(s=>state.cats[s[0]]&&PLAN.points[s[1]]).map(s=>
+      `<div class="stop"><span class="cat ${s[0]}"></span><span><b>${PLAN.points[s[1]].name}</b>｜${s[2]}</span></div>`).join('');
+    return `<div class="day ${state.activeDay===d.n?'active':''}" data-day="${d.n}">
+      <div class="day-head"><div class="day-num">D${d.n}</div>
+        <div class="day-title">${d.title}<div class="day-meta">${d.stay||''}${d.move?' · '+d.move:''}</div></div></div>
+      <div class="day-body">${d.body||''}</div>${stops?`<div class="stops">${stops}</div>`:''}</div>`;
+  }).join('');
+  daysEl.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+    const n=+el.dataset.day; state.activeDay=n; renderSheet();
+    const d=PLAN.days[n-1]; const fs=d.stops.find(s=>state.cats[s[0]]&&PLAN.points[s[1]]);
+    if(fs){ map.setZoomAndCenter(10,ll(fs[1])); openInfo(fs[1],fs[0],fs[2],d.n); }
+  }));
+  document.getElementById('costPpl').textContent = pplTxt;
+}
+
+function renderRouteDetail(){
+  const body=document.getElementById('rdBody');
+  let totalKm=0, totalMin=0, html='';
+  segInfo.forEach(s=>{
+    const fromN=PLAN.points[s.from]?.name||s.from, toN=PLAN.points[s.to]?.name||s.to;
+    const isDrive=s.mode==='drive';
+    const kmStr = (isDrive && s.ok && s.km!=null) ? `${s.km.toFixed(0)}km · ${fmtDur(s.dur)}` : (s.label||'');
+    html+=`<div class="seg-row ${isDrive?'drive':''}">
+      <span class="ic">${MODE_ICON[s.mode]||'›'}</span>
+      <span class="route">${fromN} <span class="ar">→</span> ${toN}</span>
+      <span class="km">${kmStr}</span></div>`;
+    if(isDrive && s.ok && s.km!=null){ totalKm+=s.km; totalMin+=s.dur; }
+  });
+  const drvCnt=segInfo.filter(s=>s.mode==='drive').length;
+  const totalLine = drvCnt
+    ? `<div class="seg-total"><span class="k">总里程 / 驾驶时长</span><span class="v">${totalKm.toFixed(0)}km <small>· ${fmtDur(totalMin)}</small></span></div>`
+    : `<div class="seg-total"><span class="k">本方案为高铁出行</span><span class="v" style="font-size:12px;color:var(--txt-dim)">无自驾里程</span></div>`;
+  body.innerHTML = html + totalLine;
+  // 暂存总公里数供费用计算
+  state.totalKm = totalKm;
+}
+
+function renderCost(){
+  const body=document.getElementById('costBody');
+  let html='', grand=0;
+  // 住宿
+  if(PLAN.stays && PLAN.stays.length){
+    let sub=0, lines='';
+    PLAN.stays.forEach(st=>{ const c=(st.price||0)*(st.nights||0); sub+=c;
+      lines+=`<div class="cost-line"><span>${st.name} ×${st.nights}晚</span><span class="v">¥${c.toLocaleString()}</span></div>`; });
+    html+=`<div class="cost-sec"><div class="hd">🏠 住宿 <span class="sub">¥${sub.toLocaleString()}</span></div>${lines}</div>`;
+    grand+=sub;
+  }
+  // 交通
+  const tr=PLAN.transport||{};
+  if(tr.type){ // 自驾：按公里数
+    const km=state.totalKm||0;
+    const fuel=km*(tr.ratePerKm||0), toll=km*(tr.tollPerKm||0), rental=(tr.rentalPerDay||0)*(tr.days||0), parking=tr.parking||0;
+    const sub=fuel+toll+rental+parking; grand+=sub;
+    const typeLab = tr.type==='ev'?'电费':'油费';
+    html+=`<div class="cost-sec"><div class="hd">🚗 交通 <span class="sub">${km.toFixed(0)}km · ¥${Math.round(sub).toLocaleString()}</span></div>
+      ${tr.ratePerKm?`<div class="cost-line"><span>${typeLab} ${km.toFixed(0)}×${tr.ratePerKm}</span><span class="v">¥${Math.round(fuel).toLocaleString()}</span></div>`:''}
+      ${tr.tollPerKm?`<div class="cost-line"><span>高速费 ${km.toFixed(0)}×${tr.tollPerKm}</span><span class="v">¥${Math.round(toll).toLocaleString()}</span></div>`:''}
+      ${tr.rentalPerDay?`<div class="cost-line"><span>租车 ${tr.rentalPerDay}×${tr.days}天</span><span class="v">¥${Math.round(rental).toLocaleString()}</span></div>`:''}
+      ${tr.parking?`<div class="cost-line"><span>停车费</span><span class="v">¥${Math.round(parking).toLocaleString()}</span></div>`:''}
+      <div class="cost-sub"><span>小计</span><span class="v">¥${Math.round(sub).toLocaleString()}</span></div></div>`;
+  } else if(tr.fixed!=null){
+    grand+=tr.fixed;
+    html+=`<div class="cost-sec"><div class="hd">🚗 交通 <span class="sub">¥${tr.fixed.toLocaleString()}</span></div>
+      <div class="cost-line"><span>${tr.note||'交通费'}</span><span class="v">¥${tr.fixed.toLocaleString()}</span></div></div>`;
+  }
+  // 餐饮（按人数缩放）
+  if(PLAN.meals){
+    const base=PLAN.mealsBase||1, cur=(state.people.adults+state.people.kids+state.people.elder)||base;
+    const meals=Math.round(PLAN.meals*cur/base); grand+=meals;
+    html+=`<div class="cost-sec"><div class="hd">🍴 餐饮 <span class="sub">¥${meals.toLocaleString()}</span></div>
+      <div class="cost-line"><span>${cur}人 · 随人数缩放</span><span class="v">¥${meals.toLocaleString()}</span></div></div>`;
+  }
+  body.innerHTML = html + `<div class="cost-total"><span class="k">合计</span><span class="v">¥${Math.round(grand).toLocaleString()}</span></div>
+    <div class="cost-note">${PLAN.costNote||'估算仅供参考，住宿/租车等以实际预订为准。'}</div>`;
+}
+
+function renderPeopleField(){
+  const p=state.people, f=document.getElementById('peopleField'); let html='';
+  if(p.adults!==undefined) html+=`<label>大人</label><div class="stepper"><button onclick="adjust('adults',-1)">−</button><span class="val" id="val-adults">${p.adults}</span><button onclick="adjust('adults',1)">+</button></div>`;
+  if(p.kids!==undefined) html+=`<label style="margin-left:3px">小孩</label><div class="stepper"><button onclick="adjust('kids',-1)">−</button><span class="val" id="val-kids">${p.kids}</span><button onclick="adjust('kids',1)">+</button></div>`;
+  if(p.elder!==undefined) html+=`<label style="margin-left:3px">老人</label><div class="stepper"><button onclick="adjust('elder',-1)">−</button><span class="val" id="val-elder">${p.elder||0}</span><button onclick="adjust('elder',1)">+</button></div>`;
+  f.innerHTML=html;
+}
+function adjust(field,delta){
+  state.people[field]=Math.max(0,(state.people[field]||0)+delta);
+  const v=document.getElementById('val-'+field); if(v) v.textContent=state.people[field];
+  renderSheet(); renderCost();
+}
+function toggleCat(cat){
+  state.cats[cat]=!state.cats[cat];
+  document.querySelectorAll('#filters button').forEach(b=>b.classList.toggle('on',state.cats[b.dataset.cat]));
+  renderMarkers(); renderSheet();
+}
+
+initMap();
+renderPeopleField();
+renderSheet();
+renderEndpoints();
+renderMarkers();
+renderExtras();
+renderRoutes();
+/* 仅标记、不纳入行程的参考点（PLAN.extras）—— 紫色菱形，独立于分类过滤 */
+function renderExtras(){
+  (PLAN.extras||[]).forEach(key=>{
+    const c=PLAN.points[key]; if(!c) return;
+    const mk=new AMap.Marker({position:ll(key),
+      content:`<div style="transform:translate(-50%,-50%)"><div style="width:15px;height:15px;background:#1aa3e0;border:2px solid #fff;box-shadow:0 0 0 2px #1aa3e066,0 2px 5px rgba(0,0,0,.35);transform:rotate(45deg)"></div></div>`,
+      offset:new AMap.Pixel(0,0), anchor:'center', zIndex:58});
+    mk.on('click',()=>{ infoWindow.setContent(`<div class="iw"><b>${c.name}</b><div class="cat">备选景点（未纳入行程）</div></div>`); infoWindow.open(map, ll(key)); });
+    map.add(mk); endpoints.push(mk);
+  });
+}
+document.querySelectorAll('#filters button').forEach(b=>b.addEventListener('click',()=>toggleCat(b.dataset.cat)));
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>

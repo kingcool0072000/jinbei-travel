@@ -1,0 +1,14 @@
+{
+  "name": "晋北7天自驾·低强度版",
+  "short_name": "晋北自驾",
+  "description": "北京→大同→浑源→代县→忻州 7天6晚自驾互动地图",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eef1f6",
+  "theme_color": "#e8830f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
