@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晋北景点文化导览 · 史政·建筑·宗教·经济</title>
+<style>
+  :root{
+    --bg:#f7f5f1; --paper:#fffdf8; --ink:#2b2620; --dim:#7a7064; --line:#e3ddd2;
+    --his:#6b5bd0; --arc:#1a8fe0; --rel:#2faa5b; --eco:#e8830f;
+    --accent:#9c6a1e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Source Han Serif SC","Noto Serif SC","Songti SC","SimSun",Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.85;font-size:17px}
+  ruby rt{font-size:.5em;font-family:-apple-system,"PingFang SC",sans-serif;color:#9c6a1e;letter-spacing:.5px;font-weight:600}
+
+  .hero{background:linear-gradient(160deg,#3a2e22,#6b4a26 60%,#9c6a1e);color:#f7f0e4;padding:72px 24px 60px;text-align:center;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.12),transparent 50%)}
+  .hero h1{font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:2px;line-height:1.3;position:relative}
+  .hero .sub{margin-top:14px;font-size:clamp(14px,2.4vw,17px);opacity:.85;letter-spacing:1px}
+  .hero .meta{margin-top:20px;font-size:13px;opacity:.7}
+  .hero .tags{margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .hero .tags span{padding:4px 14px;border:1px solid rgba(255,255,255,.4);border-radius:20px;font-size:13px;font-family:-apple-system,sans-serif}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:220px 1fr;gap:40px}
+  .toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:28px 0;font-family:-apple-system,"PingFang SC",sans-serif;font-size:13px}
+  .toc h4{font-size:11px;letter-spacing:1px;color:var(--dim);margin:18px 0 6px;font-weight:700}
+  .toc h4:first-child{margin-top:0}
+  .toc a{display:block;padding:3px 0;color:var(--dim);text-decoration:none;border-left:2px solid transparent;padding-left:10px;transition:.15s}
+  .toc a:hover{color:var(--ink);border-color:var(--accent)}
+  .toc .grp>a{padding-left:20px;font-size:12.5px}
+
+  .content{padding:36px 0 80px;max-width:760px}
+  .content section{margin-bottom:46px}
+  .content h2{font-size:24px;font-weight:800;color:#5a3d18;border-left:5px solid var(--accent);padding-left:12px;margin-bottom:18px;font-family:-apple-system,"PingFang SC",sans-serif}
+  .content h3{font-size:21px;font-weight:700;margin:28px 0 2px;color:var(--ink)}
+  .era{font-family:-apple-system,"PingFang SC",sans-serif;font-size:12.5px;color:#6b5b3a;background:#f0e6d6;display:inline-block;padding:2px 11px;border-radius:11px;margin:4px 0 10px}
+  .lead{color:var(--dim);font-size:15px;margin-bottom:14px;font-family:-apple-system,"PingFang SC",sans-serif}
+  .lead b{color:var(--accent)}
+
+  figure{margin:16px 0}
+  figure img{width:100%;border-radius:8px;border:1px solid var(--line);display:block}
+  figcaption{font-family:-apple-system,"PingFang SC",sans-serif;font-size:12.5px;color:var(--dim);margin-top:6px;text-align:center}
+
+  .dim{display:grid;grid-template-columns:64px 1fr;gap:14px;margin:12px 0;align-items:start}
+  .dim .tag{font-family:-apple-system,"PingFang SC",sans-serif;font-size:12px;font-weight:700;color:#fff;padding:3px 0;border-radius:4px;text-align:center;margin-top:3px}
+  .tag.his{background:var(--his)} .tag.arc{background:var(--arc)} .tag.rel{background:var(--rel)} .tag.eco{background:var(--eco)}
+  .dim p{font-size:16px;text-align:justify;grid-column:2}
+  .dim p+p{margin-top:6px}
+
+  /* 历史时间线 */
+  .tl{position:relative;border-left:3px solid #c9b896;margin:18px 0 8px 6px;font-family:-apple-system,"PingFang SC",sans-serif}
+  .tl-band{margin:16px 0 2px -3px;border-left:3px solid var(--accent);padding:5px 0 5px 15px;color:#5a3d18;font-weight:800;font-size:14.5px;background:linear-gradient(90deg,#f0e6d6,transparent 70%)}
+  .tl-band small{color:var(--dim);font-weight:600;font-size:12px;margin-left:8px}
+  .tl-row{display:grid;grid-template-columns:124px 1.1fr 1fr 1.1fr;gap:12px;padding:11px 0 11px 22px;position:relative;border-bottom:1px dashed var(--line)}
+  .tl-row::before{content:"";position:absolute;left:-7.5px;top:18px;width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent)}
+  .tl-time b{display:block;font-size:15px;color:#5a3d18}
+  .tl-time span{font-size:12px;color:var(--dim)}
+  .tl-evt,.tl-cul{font-size:14px;line-height:1.5}
+  .tl-dt{font-size:13.5px;color:#7a4a12;background:#f6efe0;border-radius:6px;padding:3px 9px;align-self:start;line-height:1.5}
+  .tl-legend{font-family:-apple-system,"PingFang SC",sans-serif;font-size:12px;color:var(--dim);margin:10px 0 0 6px}
+  .tl-note{margin:8px 0 14px 22px;background:#f3efe6;border-left:3px solid var(--his);border-radius:0 8px 8px 0;padding:11px 15px;font-family:-apple-system,"PingFang SC",sans-serif;font-size:13.5px;line-height:1.65;color:#4a4030}
+  .tl-note b{color:#5a3d18}
+  .tl-note .h{display:block;font-weight:800;color:#5a3d18;margin-bottom:3px}
+  .tl-legend b{color:#7a4a12;background:#f6efe0;padding:1px 7px;border-radius:5px}
+  @media (max-width:880px){.tl-row{grid-template-columns:1fr;gap:3px;padding-left:20px}.tl-dt{margin-top:4px}}
+
+  .poem{background:var(--paper);border-left:3px solid var(--rel);padding:14px 20px;margin:16px 0;font-size:16.5px;line-height:2.1;border-radius:0 8px 8px 0}
+  .poem .src{display:block;font-family:-apple-system,"PingFang SC",sans-serif;font-size:12px;color:var(--dim);margin-top:6px;text-align:right}
+
+  .knowbox{background:#f3efe6;border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:24px 0}
+  .knowbox h3{font-size:18px;margin:18px 0 8px;color:#5a3d18}
+  .knowbox h3:first-child{margin-top:0}
+  .knowbox p,.knowbox li{font-size:15.5px;text-align:justify}
+  .knowbox ul{margin:6px 0 6px 20px}
+  .knowbox li{margin:3px 0}
+
+  .intro p{margin-bottom:12px;text-align:justify}
+  .intro .axes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+  .intro .axes div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-family:-apple-system,"PingFang SC",sans-serif;font-size:14px}
+  .intro .axes .his b{color:var(--his)} .intro .axes .arc b{color:var(--arc)} .intro .axes .rel b{color:var(--rel)} .intro .axes .eco b{color:var(--eco)}
+
+  .closer{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-top:20px}
+  .closer p{text-align:justify}
+  .foot{text-align:center;color:var(--dim);font-size:13px;padding:40px 24px 60px;font-family:-apple-system,"PingFang SC",sans-serif;border-top:1px solid var(--line);margin-top:20px}
+
+  @media (max-width:880px){
+    .wrap{grid-template-columns:1fr;gap:0;padding:0 18px}
+    .toc{position:static;height:auto;padding:14px 0 6px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px}
+    .toc h4{width:100%;margin:8px 0 2px}
+    .toc .grp>a{display:inline;padding:0;border:0;padding-left:0}
+    .toc a::after{content:"·";margin-left:12px;color:var(--line)}
+    .content{padding:24px 0 60px}
+    .dim{grid-template-columns:54px 1fr;gap:10px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>晋北景点文化导览</h1>
+  <div class="sub">从大同到忻州 · 一条线看懂半部中国中古史</div>
+  <div class="tags"><span>史政</span><span>建筑</span><span>宗教</span><span>经济</span><span>佛教·诗词</span></div>
+  <div class="meta">基于 北京→大同→浑源→代县→忻州 7天自驾行程 · 第二版</div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <h4>导览</h4>
+  <a href="#intro">引言</a>
+  <a href="#timeline">历史时间线</a>
+  <a href="#buddha">佛教基础知识</a>
+  <a href="#materials">建筑材料·琉璃瓦</a>
+  <h4>大同</h4>
+  <div class="grp">
+    <a href="#huayan">华严寺</a>
+    <a href="#shanhua">善化寺</a>
+    <a href="#datongmus">博物馆·城墙</a>
+    <a href="#jiulong">九龙壁·代王</a>
+  </div>
+  <h4>浑源</h4>
+  <div class="grp">
+    <a href="#xuankong">悬空寺</a>
+    <a href="#yongan">永安寺</a>
+    <a href="#yuanjue">圆觉寺砖塔</a>
+  </div>
+  <h4>应县</h4>
+  <div class="grp"><a href="#muta">应县木塔</a></div>
+  <h4>代县</h4>
+  <div class="grp">
+    <a href="#yanmen">雁门关</a>
+    <a href="#bianjing">边靖楼</a>
+  </div>
+  <h4>忻州</h4>
+  <div class="grp">
+    <a href="#xinzhou">古城·秀容书院</a>
+    <a href="#foguang">佛光寺</a>
+    <a href="#yanxi">阎锡山故居</a>
+  </div>
+  <h4>附录</h4>
+  <div class="grp"><a href="#pingxing">平型关纪念馆</a></div>
+  <a href="#closer">结语</a>
+</nav>
+
+<main class="content">
+
+<section id="intro" class="intro">
+  <h2>引言：边塞、京华与佛国的重叠带</h2>
+  <p>晋北（山西北部）是华夏文明的一处折叠地带——农牧交错、胡汉杂糅。它既是中原王朝的北门锁钥，也是佛教东传的第一落点。从<ruby>北魏<rt>běi wèi</rt></ruby>定都平城（今大同），到辽金置西京陪都，从明代九边重镇到民国模范省，一千六百年间，政权、宗教、营造与商贸在这里层层叠加。这条从大同南下至忻州的线，串起华严、悬空、木塔、雁门——几乎是一部露天的中国中古史。</p>
+  <div class="axes">
+    <div class="his"><b>史政</b>　都城陪都制度、皇权与教权、边防军政、省政自治</div>
+    <div class="arc"><b>建筑</b>　木构从辽金大木作到明清楼阁的演进</div>
+    <div class="rel"><b>宗教</b>　佛教中国化、三教合一、水陆法会</div>
+    <div class="eco"><b>经济</b>　丝路北道、边关互市、寺院经济、晋商、近代实业</div>
+  </div>
+</section>
+
+<section id="timeline">
+  <h2>历史时间线：北魏 → 元（朝代·皇帝·事件·文化·大同）</h2>
+  <div class="tl">
+
+    <div class="tl-band">北魏 <small>386–534 · 大同=平城，都城时期</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>398</b><span>道武帝 拓跋珪</span></div>
+      <div class="tl-evt">迁都平城（今大同）</div>
+      <div class="tl-cul">鲜卑建国、汉化开端</div>
+      <div class="tl-dt">大同首次成为王朝都城</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>446</b><span>太武帝 拓跋焘</span></div>
+      <div class="tl-evt">太武灭佛</div>
+      <div class="tl-cul">崇道抑佛，佛教受挫</div>
+      <div class="tl-dt">平城寺院遭毁</div>
+    </div>
+    <div class="tl-note">
+      <span class="h">为何灭佛？</span>
+      历史上有"三武一宗"四次灭佛（北魏太武帝、北周武帝、唐武宗、后周世宗），本时间线所涉为其二（446 太武灭佛、845 会昌灭佛）。灭佛的根源并非单纯的信仰之争，而在三股压力：<b>① 经济</b>——寺院占有大量土地与免税免役的僧尼，与国家争人口、争赋税，战时财政吃紧时矛盾激化；<b>② 政治</b>——僧团势力膨胀，威胁皇权对人口与资源的控制；<b>③ 宗教/思想</b>——帝王崇道（太武帝信道士寇谦之、唐武宗好道术），加之儒家夷夏之辨。太武灭佛的直接导火索是长安佛寺被查获私藏兵器；会昌灭佛拆寺4600余、归俗僧尼26万。<b>每次灭佛之后必有"复法"</b>——如会昌灭佛后的佛光寺东大殿（857）。
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>494</b><span>孝文帝 元宏</span></div>
+      <div class="tl-evt">迁都洛阳</div>
+      <div class="tl-cul">全面汉化改革</div>
+      <div class="tl-dt">大同结束都城地位</div>
+    </div>
+
+    <div class="tl-band">东魏 · 北齐 · 北周 <small>534–581</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>534</b><span>北魏分裂</span></div>
+      <div class="tl-evt">东魏/北齐相继控大同</div>
+      <div class="tl-cul">佛事渐恢复</div>
+      <div class="tl-dt">大同降为边州</div>
+    </div>
+
+    <div class="tl-band">隋 · 唐 <small>581–907</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>618</b><span>高祖 李渊</span></div>
+      <div class="tl-evt">唐朝建立</div>
+      <div class="tl-cul">佛教鼎盛</div>
+      <div class="tl-dt">大同为北方军镇</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>845</b><span>武宗 李炎</span></div>
+      <div class="tl-evt">会昌灭佛</div>
+      <div class="tl-cul">佛教重创</div>
+      <div class="tl-dt">晋北寺院毁损（佛光寺被毁）</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>857</b><span>宣宗 李忱</span></div>
+      <div class="tl-evt">大中复法，重建佛光寺</div>
+      <div class="tl-cul">唐代木构复兴</div>
+      <div class="tl-dt">五台佛光寺东大殿落成（忻州）</div>
+    </div>
+
+    <div class="tl-band">辽 <small>907–1125 · 大同=西京陪都</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>1044</b><span>兴宗 耶律宗真</span></div>
+      <div class="tl-evt">升云州为西京道</div>
+      <div class="tl-cul">辽廷崇佛</div>
+      <div class="tl-dt">大同成辽五京之"西京"</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>1056</b><span>道宗 耶律洪基</span></div>
+      <div class="tl-evt">应县木塔建成</div>
+      <div class="tl-cul">《契丹藏》刻印</div>
+      <div class="tl-dt">木塔、华严寺营建鼎盛</div>
+    </div>
+
+    <div class="tl-band">金 <small>1115–1234</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>1125</b><span>金灭辽</span></div>
+      <div class="tl-evt">大同入金，仍为西京</div>
+      <div class="tl-cul">金代木构成熟</div>
+      <div class="tl-dt">善化寺金构、圆觉寺砖塔</div>
+    </div>
+
+    <div class="tl-band">元 <small>1271–1368</small></div>
+    <div class="tl-row">
+      <div class="tl-time"><b>1271</b><span>世祖 忽必烈</span></div>
+      <div class="tl-evt">元朝建立</div>
+      <div class="tl-cul">藏传与汉传佛教并奉</div>
+      <div class="tl-dt">大同宗教多元</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time"><b>元中后期</b><span>敕建</span></div>
+      <div class="tl-evt">永安寺传法正宗之殿</div>
+      <div class="tl-cul">水陆壁画兴盛</div>
+      <div class="tl-dt">浑源永安寺营建</div>
+    </div>
+
+  </div>
+  <div class="tl-legend">高亮列 <b>与大同/晋北的关系</b>　·　时间线聚焦北魏至元代（公元398–14世纪）</div>
+</section>
+
+<section id="buddha">
+  <h2>附：佛教基础知识（看懂晋北寺院的钥匙）</h2>
+  <div class="knowbox">
+    <h3>三世佛</h3>
+    <p>寺院大雄宝殿正中所供"三世佛"有两种组合：</p>
+    <ul>
+      <li><b>竖三世佛</b>（表时间）：过去 <ruby>燃灯古佛<rt>rán dēng gǔ fó</rt></ruby> · 现在 <ruby>释迦牟尼佛<rt>shì jiā móu ní fó</rt></ruby> · 未来 <ruby>弥勒佛<rt>mí lè fó</rt></ruby>。</li>
+      <li><b>横三世佛</b>（表空间方位）：中央释迦牟尼 · 东方 <ruby>药师佛<rt>yào shī fó</rt></ruby>（琉璃世界）· 西方 <ruby>阿弥陀佛<rt>ā mì tuó fó</rt></ruby>（极乐世界）。</li>
+    </ul>
+    <p>辽金寺院大殿多见其一，认殿中三像谁居中、手持法物为何，即可辨别。</p>
+
+    <h3>三身佛</h3>
+    <ul>
+      <li><b>法身</b> <ruby>毗卢遮那佛<rt>pí lú zhē nà fó</rt></ruby>（宇宙理体）</li>
+      <li><b>报身</b> <ruby>卢舍那佛<rt>lú shě nà fó</rt></ruby>（修行智果）</li>
+      <li><b>应身</b> 释迦牟尼佛（化身度生）</li>
+    </ul>
+
+    <h3>四大菩萨与道场</h3>
+    <ul>
+      <li><ruby>文殊<rt>wén shū</rt></ruby>菩萨——大智，骑青狮，道场山西五台山。</li>
+      <li><ruby>普贤<rt>pǔ xián</rt></ruby>菩萨——大行，乘六牙白象，道场四川峨眉山。</li>
+      <li><ruby>观世音<rt>guān shì yīn</rt></ruby>菩萨——大悲，道场浙江普陀山。</li>
+      <li><ruby>地藏王<rt>dì zàng wáng</rt></ruby>菩萨——大愿，道场安徽九华山。</li>
+    </ul>
+    <p><b>华严三圣</b>：毗卢遮那佛居中，左文殊、右普贤——华严寺、善化寺三圣殿所奉即此组。</p>
+
+    <h3>常见造像组合</h3>
+    <p>释迦牟尼佛二胁侍，多为弟子 <ruby>迦叶<rt>jiā shè</rt></ruby>（年长，头陀苦行）与 <ruby>阿难<rt>ā nán</rt></ruby>（年少，多闻第一）；或以文殊、普贤二菩萨为胁侍。佛旁常立二弟子、二菩萨，构成"一佛二弟子二菩萨"的标准群像。</p>
+  </div>
+</section>
+
+<section id="materials">
+  <h2>附：建筑材料——瓦与琉璃瓦</h2>
+  <div class="knowbox">
+    <h3>陶瓦：从茅茨土阶到瓦屋面</h3>
+    <p>西周早期（约公元前11世纪）已出现板瓦、筒瓦与瓦当（岐山凤雏村遗址），中国屋顶自此告别"茅茨土阶"。瓦作历经筒瓦—板瓦合瓦—仰合瓦的演进，至唐宋形成成熟屋面做法。</p>
+    <h3>琉璃瓦：色彩与等级</h3>
+    <p><ruby>琉璃<rt>liú lí</rt></ruby>瓦以陶土成型、施铅釉（琉璃釉）低温二次烧成，色泽艳丽、不渗水。其源可上溯北魏琉璃构件，但大规模用于屋顶始于唐代，宋《<ruby>营造法式<rt>yíng zào fǎ shì</rt></ruby>》立规，明清宫殿坛庙普遍使用。颜色有严格等级：<b>黄</b>为帝室专用，<b>绿</b>用于王府与寺庙，<b>蓝</b>（天坛）祭天，剪边、聚锦等为次。脊上的鸱吻、<ruby>脊兽<rt>jǐ shòu</rt></ruby>也多为琉璃制品。</p>
+    <h3>晋北关联</h3>
+    <p>大同<b>九龙壁</b>是明代琉璃照壁的巅峰；华严寺、善化寺屋顶的琉璃剪边与脊兽、应县木塔塔刹铁件、圆觉寺砖塔砖雕仿瓦——晋北的营造史，也是一部瓦与琉璃的材料史。</p>
+  </div>
+</section>
+
+<section>
+  <h2>一、大同：北魏平城与辽金西京</h2>
+
+  <article id="huayan">
+    <h3>华严寺</h3>
+    <div class="era">辽（907–1125）· 道宗 耶律洪基（崇佛，刻《契丹藏》）· 以大同为西京陪都</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Datong_Huayan_Si_2013.08.29_08-54-08.jpg/960px-Datong_Huayan_Si_2013.08.29_08-54-08.jpg" alt="华严寺"><figcaption>华严寺大雄宝殿 · 现存最大辽金佛殿</figcaption></figure>
+    <p class="lead">定位：<b>辽代皇家祖庙，现存最大辽金佛殿</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>辽以大同为西京陪都，华严寺是带皇室宗庙性质的国家寺院。辽道宗崇佛，曾在此雕造《<ruby>契丹<rt>qì dān</rt></ruby>藏》，把佛典的国家刻印当作治国文教工程。契丹二元统治（北面官治契丹、南面官治汉人）下，西京既是军事重镇也是文化枢纽，华严寺正是这一格局的物化。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p><b>大雄宝殿</b>面阔九间、进深五间，是中国现存最大的辽金佛殿。殿顶为单檐 <ruby>庑殿顶<rt>wǔ diàn dǐng</rt></ruby>（四阿顶），举折平缓、出檐深远；正脊两端 <ruby>鸱吻<rt>chī wěn</rt></ruby> 高达4.5米（明代补塑，国内最大脊饰之一），垂脊列 <ruby>脊兽<rt>jǐ shòu</rt></ruby> 依等级排列——庑殿顶走兽之多本身就是建筑规格的宣言。殿内用 <ruby>减柱造<rt>jiǎn zhù zào</rt></ruby>（减柱十二根），以少数立柱撑起宏大空间；<ruby>斗拱<rt>dǒu gǒng</rt></ruby> 为五铺作双抄，出跳硕健，是辽代大木作的胆识。整寺坐西向东——不同于汉地坐北朝南，是契丹"敬日崇东"俗信的遗存。</p>
+      <p><b>薄伽教藏殿</b>（辽）内有"天宫楼阁"壁藏：沿墙三十八间小木作经橱，重檐、腰檐、鸱吻脊兽齐备，<ruby>榫卯<rt>sǔn mǎo</rt></ruby> 精绝，梁思成誉为"海内孤品"。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>华严宗以《华严经》为本，讲"法界缘起"。薄伽教藏殿内的合掌露齿菩萨，体态婀娜、露齿微笑，打破佛像肃穆定式，被誉为"东方维纳斯"，是辽代造像世俗化、人情化的高峰。殿内所奉即"华严三圣"——毗卢遮那佛与文殊、普贤二菩萨。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>皇家寺院坐拥大量田产与供养，是辽代寺院经济的典型——宗教场所同时也是土地与财富的聚集中心。</p></div>
+  </article>
+
+  <article id="shanhua">
+    <h3>善化寺</h3>
+    <div class="era">辽 · 金（1115–1234）· 辽代初建，金代重修</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Datong_Shanhua_Si_2013.08.29_12-28-45.jpg/960px-Datong_Shanhua_Si_2013.08.29_12-28-45.jpg" alt="善化寺"><figcaption>善化寺 · 辽金建筑群完整标本</figcaption></figure>
+    <p class="lead">定位：<b>辽金建筑群的完整标本</b></p>
+    <div class="dim"><span class="tag arc">建筑</span><p>寺内<b>大雄宝殿</b>为辽构，单檐庑殿顶，面阔七间，减柱造，斗拱五铺作，脊兽瓦作齐整；<b>三圣殿</b>为金构，<ruby>斜拱<rt>xié gǒng</rt></ruby>（斜昂）发达——拱昂斜出交错如花，是金代建筑最显眼的标志；<b>普贤阁</b>为金代二层楼阁，<ruby>歇山顶<rt>xiē shān dǐng</rt></ruby>，<ruby>平坐<rt>píng zuò</rt></ruby>栏杆，<ruby>叉柱造<rt>chā zhù zào</rt></ruby>（上层柱脚插于下层梁架）。一组建筑横跨两朝，斗拱形制与梁架结构可对比研读，是辽金木构演进的活教材。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>主供华严三圣（毗卢遮那佛、文殊、普贤），与华严寺同属华严宗法脉，是大同华严信仰的另一支点。</p></div>
+  </article>
+
+  <article id="datongmus">
+    <h3>大同博物馆 + 古城墙</h3>
+    <div class="era">北魏 + 明（1368–1644）· 洪武帝 命 徐达 增筑城墙（1372）</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Datongsouthgate2019.jpg/960px-Datongsouthgate2019.jpg" alt="大同城墙"><figcaption>大同古城墙南门 · 明代九边重镇遗存</figcaption></figure>
+    <div class="dim"><span class="tag his">史政</span><p>博物馆藏司马金龙墓漆屏、北魏俑阵，讲述拓跋鲜卑从大兴安岭南下、定都平城、推行汉化改革的迁徙建国史。古城墙为明洪武五年（1372）徐达在辽金旧城上增筑，大同自此位列"九边重镇"，成为明廷北防体系支柱。</p></div>
+  </article>
+
+  <article id="jiulong">
+    <h3>九龙壁与代王</h3>
+    <div class="era">明 · 洪武二十五年（1392）建代王府九龙壁 · 代王 <ruby>朱桂<rt>zhū guì</rt></ruby> 就藩大同</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Datong_Jiulongbi_2013.08.29_13-37-51.jpg/960px-Datong_Jiulongbi_2013.08.29_13-37-51.jpg" alt="大同九龙壁"><figcaption>大同九龙壁 · 中国现存最早最大的九龙壁</figcaption></figure>
+    <p class="lead">定位：<b>明代藩王琉璃照壁巅峰；"代王"与"代县"同名异源</b></p>
+    <div class="dim"><span class="tag his">史政</span><p><b>代王</b>是明太祖朱元璋第十三子 <ruby>朱桂<rt>zhū guì</rt></ruby>，洪武二十五年（1392）就藩大同，传十一世，世袭至明末。代王府规模宏大，王府前照壁即九龙壁。朱桂性暴戾，建文时一度废为庶人，永乐复爵——其藩系是明代大同政治的轴心。</p>
+      <p><b>澄清一个常见混淆</b>：大同"代王"是明代藩封（朱桂），与<b>代县/代州</b>地名并无关联。代州之"代"源自古<b>代国/代郡</b>（战国赵置，句注以北，今河北蔚县至山西代县一带）；明藩王封"代"取古地名雅号，二者"代"同名而异源，并不存在"代王封于代县"的对应关系。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>大同九龙壁长45.5米、高8米、厚2.02米，是<b>中国现存最早、最大</b>的一座九龙壁，比北京北海、故宫两座（皆清乾隆）更早更大。琉璃烧造需倾一府之力，是明代大同手工业与藩王财力的见证。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>国内著名九龙壁<b>三大座</b>：大同九龙壁（明·最早最大）、北京北海九龙壁（清乾隆·双面）、北京故宫皇极门九龙壁（清乾隆）。壁身以黄、绿、蓝、紫、赭等色琉璃拼塑九条腾龙，工艺为明代琉璃巅峰。</p></div>
+  </article>
+</section>
+
+<section>
+  <h2>二、浑源：崖壁上的三教与元明遗构</h2>
+
+  <article id="xuankong">
+    <h3>悬空寺</h3>
+    <div class="era">北魏 · 孝文帝 元宏（491年）</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Hangingtemple20190929.jpg/960px-Hangingtemple20190929.jpg" alt="悬空寺"><figcaption>悬空寺 · 贴崖悬挑的三层阁</figcaption></figure>
+    <p class="lead">定位：<b>贴崖悬空的三教合一奇构</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>始建于北魏后期（491年），正值太武帝灭佛之后佛教复兴、佛道争锋之时。三教同殿，是政治上调和儒释道的务实选择，也是北魏后期思想政策从对立走向融合的缩影。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>"悬"是结构戏法——以崖壁凿洞、半插 <ruby>飞梁<rt>fēi liáng</rt></ruby> 为悬挑基座，梁上立柱、柱上架阁，层层挑出。看似靠几根细木支撑，实则载荷全靠飞梁嵌入岩体，立柱多为后补装饰。三层楼阁以栈道连廊相通，飞檐 <ruby>翼角<rt>yì jiǎo</rt></ruby> 高翘，<ruby>榫卯<rt>sǔn mǎo</rt></ruby> 柔性节点使整组木构在千年地震中摇而不倒。现存脊兽瓦作多为明清修缮，依明清规制。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>三教殿内释迦居中、老子孔子分侍，是中国现存少有的三教合一寺院实证，反映北朝后期信仰从冲突走向合流。寺内传有李白所题"壮观"石刻。</p></div>
+    <div class="poem">蜃楼疑海上，鸟道没云中。<span class="src">—— 悬空寺古题咏</span></div>
+  </article>
+
+  <article id="yongan">
+    <h3>永安寺</h3>
+    <div class="era">元（1271–1368）· 元代敕建</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/%E6%B0%B8%E5%AE%89%E5%AF%BA%E4%BC%A0%E6%B3%95%E6%AD%A3%E5%AE%97%E6%AE%BF%E6%AD%A3%E9%9D%A2.jpg/960px-%E6%B0%B8%E5%AE%89%E5%AF%BA%E4%BC%A0%E6%B3%95%E6%AD%A3%E5%AE%97%E6%AE%BF%E6%AD%A3%E9%9D%A2.jpg" alt="永安寺"><figcaption>永安寺传法正宗之殿 · 元代木构</figcaption></figure>
+    <p class="lead">定位：<b>元代木构与水陆壁画的遗存</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>"传法正宗之殿"为元代遗构。元代统治者兼奉藏传与汉传佛教，寺名带御赐色彩，是蒙元宗教宽容政策的投射。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>殿宇用材粗壮、风格古拙，与辽金的雄健一脉相承又自有元风，是晋北元构的重要样本。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>殿内水陆画（元明）表现<b>水陆法会</b>——一种超度水陆一切众生的大型仪轨，是佛教中国化中民间信仰层最繁盛的图像系统，壁画诸天、地狱、鬼神齐聚一堂。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>水陆法会规模宏大、耗资甚巨，多赖商贾与信众资助，是民间经济反哺宗教活动的样本。</p></div>
+  </article>
+
+  <article id="yuanjue">
+    <h3>圆觉寺砖塔</h3>
+    <div class="era">金 · 金代</div>
+    <div class="dim"><span class="tag arc">建筑</span><p>金代 <ruby>密檐<rt>mì yán</rt></ruby> 式砖塔，八角九层（实心），下承 <ruby>须弥座<rt>xū mí zuò</rt></ruby> 塔基，壁面满雕仿木构砖雕（斗拱、门窗、佛像）。塔顶 <ruby>塔刹<rt>tǎ shà</rt></ruby> 立铁质翔鸟（相风鸟），可随风转动，是国内仅存的古代测风实物，把建筑与科技缝合于一塔。</p></div>
+  </article>
+</section>
+
+<section>
+  <h2>三、应县：辽代木构巅峰</h2>
+
+  <article id="muta">
+    <h3>应县木塔（佛宫寺释迦塔）</h3>
+    <div class="era">辽 · 兴宗 耶律宗真 / 仁懿皇后 <ruby>萧挞里<rt>xiāo tà lǐ</rt></ruby>（倡建，1056年）</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Pagoda_of_Fogong_Temple_at_Dust.jpg/960px-Pagoda_of_Fogong_Temple_at_Dust.jpg" alt="应县木塔"><figcaption>佛宫寺释迦塔 · 世界现存最古最高木塔</figcaption></figure>
+    <p class="lead">定位：<b>世界现存最古最高的木塔，辽代木构巅峰</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>辽清宁二年（1056）建成，传为辽兴宗仁懿皇后萧氏倡建。萧氏后族在辽政坛举足轻重，崇佛是后族巩固地位、参与国政的手段——木塔的营建既是信仰，也是政治。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>通高67.31米，外观五层、内含暗层共九层，八角形平面。采用<b>双层套筒</b>结构——内外两圈木柱形成"筒中筒"，层间以木铺作层连接，全塔无一根铁钉，以 <ruby>54种<rt></rt></ruby> <ruby>斗拱<rt>dǒu gǒng</rt></ruby>（<ruby>铺作<rt>pū zuò</rt></ruby>）层层咬结。暗层加入斜撑，构成桁架式刚性环，柔性节点与斜撑形成多重抗震防线，历经千年地震炮击而不倒。底层重檐、各层设平坐栏杆；塔顶 <ruby>塔刹<rt>tǎ shà</rt></ruby> 为铁制仰莲座上叠七重 <ruby>相轮<rt>xiàng lún</rt></ruby>、宝珠，以铁索（角链)牵系；下承须弥座台基，脊兽瓦作完备。是中国木构建筑的力学丰碑。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>名"释迦塔"，内奉 <ruby>释迦牟尼<rt>shì jiā móu ní</rt></ruby> <ruby>佛牙舍利<rt>fó yá shè lì</rt></ruby>。相传释迦 <ruby>涅槃<rt>niè pán</rt></ruby> 后留两颗灵牙，辽代入塔供奉，为木塔镇塔之宝，也是辽代崇佛的极致供养。塔内各层塑像不同：一层释迦坐像，二层四方佛，三层坐于莲座的四佛，四层五方佛——呈密宗与显教交融的造像布局。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>如此规模的木塔耗木数千立方、役匠无数，背后是辽代寺院经济鼎盛与皇族财力的合力，也是崇佛国策下社会资源向宗教倾斜的典型。</p></div>
+    <div class="poem">沧州铁狮子，应州释迦塔，正定铜菩萨，赵州石拱桥。<span class="src">—— 华北民间古谚，并称"华北四宝"</span></div>
+  </article>
+</section>
+
+<section>
+  <h2>四、代县（代州）：长城边关与明代楼阁</h2>
+
+  <article id="yanmen">
+    <h3>雁门关</h3>
+    <div class="era">战国–明 · 赵武灵王 设雁门郡；明洪武帝 设关修缮</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Yanmen_Pass_%2820250712164217%29.jpg/960px-Yanmen_Pass_%2820250712164217%29.jpg" alt="雁门关"><figcaption>雁门关 · 中华第一关</figcaption></figure>
+    <p class="lead">定位：<b>中华第一关，农牧博弈的千年前线</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>雁门关扼大同盆地与忻定盆地之间的咽喉，自古为中原王朝与北方游牧政权交锋之地。战国李牧在此御匈，汉武帝由此北击，宋代杨家将血战于此，抗战时八路军雁门关伏击亦在此。它既是战争之地，也是盟约之地——宋辽 <ruby>澶渊<rt>chán yuān</rt></ruby> 之盟前后的南北博弈中，雁门是关键筹码之一。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>关城、<ruby>瓮城<rt>wèng chéng</rt></ruby>、长城墙体构成层层防御体系。墙体夯土包砖，上设 <ruby>垛口<rt>duǒ kǒu</rt></ruby>、射孔、敌楼；瓮城"瓮中捉鳖"的设计是冷兵器时代军事工程的经典，体现"以空间换时间"的防御逻辑。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>战时是军事咽喉，和时是贸易咽喉。边关互市、茶马贸易在此流转——长城并非单纯封锁线，而是一条"可控的"经济带，雁门是其上最忙的阀门。</p></div>
+    <div class="poem">
+      黑云压城城欲<ruby>摧<rt>cuī</rt></ruby>，甲光向日金鳞开。<br>
+      <ruby>角<rt>jiǎo</rt></ruby>声满天秋色里，塞上<ruby>燕脂<rt>yān zhī</rt></ruby>凝夜紫。<br>
+      半卷红旗临易水，霜重鼓寒声不起。<br>
+      报君黄金台上意，<ruby>提携<rt>tí xié</rt></ruby>玉龙为君死。
+      <span class="src">—— 唐 · 李贺《雁门太守行》</span>
+    </div>
+  </article>
+
+  <article id="bianjing">
+    <h3>边靖楼</h3>
+    <div class="era">明 · 洪武七年（1374）</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/%E4%BB%A3%E5%8E%BF%E8%BE%B9%E9%9D%96%E6%A5%BC.jpg/960px-%E4%BB%A3%E5%8E%BF%E8%BE%B9%E9%9D%96%E6%A5%BC.jpg" alt="边靖楼"><figcaption>边靖楼 · "声闻四达"明代鼓楼</figcaption></figure>
+    <p class="lead">定位：<b>明代代州鼓楼，"声闻四达"</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>明洪武七年（1374）建，为代州边防军政指挥的中枢节点，鼓声传令、调度兵马。明代九边体系中，代州是内长城防线一环。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>通高约40米，三层四檐歇山顶，是国内现存最大的鼓楼之一，木构楼阁的明代代表作。斗拱层叠、翼角飞翘，悬"声闻四达""威镇三关"巨匾，道其军事传令功能。</p></div>
+  </article>
+</section>
+
+<section>
+  <h2>五、忻州：秀容文脉与民国风云</h2>
+
+  <article id="xinzhou">
+    <h3>忻州古城 + 秀容书院</h3>
+    <div class="era">清（1644–1912）· 乾隆四十年（1775）知州 鲁璠 建秀容书院</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Entrance_paifang_of_Xiurong_Academy_%2820250712082728%29.jpg/960px-Entrance_paifang_of_Xiurong_Academy_%2820250712082728%29.jpg" alt="秀容书院"><figcaption>秀容书院牌坊 · 忻州文脉所在</figcaption></figure>
+    <div class="dim"><span class="tag his">史政</span><p>忻州古称秀容，明清为州。秀容书院建于清乾隆四十年（1775），是忻州最高学府，承载地方文教与士绅自治传统。金元之际文宗 <ruby>元好问<rt>yuán hào wèn</rt></ruby> 即秀容人，号为"北方文雄"。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>忻定盆地沃野，是晋北粮仓；清代晋商辐射至此，古城商号云集，是商贸网络深入地方社会的见证。</p></div>
+    <div class="poem">问世间，情是何物，直教生死相许？<span class="src">—— 金 · 元好问《<ruby>摸鱼儿<rt>mō yú ér</rt></ruby>·雁丘词》，元好问为秀容（忻州）人</span></div>
+  </article>
+
+  <article id="foguang">
+    <h3>佛光寺（五台县·忻州）</h3>
+    <div class="era">唐 · 大中十一年（857）东大殿 · 北魏始建；1937年梁思成、林徽因发现</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%E4%BD%9B%E5%85%89%E5%AF%BA-1.jpg/960px-%E4%BD%9B%E5%85%89%E5%AF%BA-1.jpg" alt="佛光寺东大殿"><figcaption>佛光寺东大殿 · 中国现存最大唐代木构</figcaption></figure>
+    <p class="lead">定位：<b>打破"中国无唐代木构"之断言的唐代东大殿</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>佛光寺北魏始建，唐武宗会昌灭佛（845）被毁；宣宗复法后，由女施主宁公遇捐资，于大中十一年（857）重建东大殿。1937年，梁思成、林徽因依敦煌壁画线索寻得此殿，从梁上墨书确认年代，打破日本学者"中国境内已无唐代木构、欲看唐构只能去日本"的断言，是中国建筑史的里程碑。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p><b>东大殿</b>单檐庑殿顶，面阔七间，是中国现存体量最大的唐代木构。<ruby>斗拱<rt>dǒu gǒng</rt></ruby>七铺作双抄双下昂，出跳深远，斗拱高度达柱高之半——唐构"斗拱宏大、檐出如翼"的典型。柱身粗壮，施<ruby>侧脚<rt>cè jiǎo</rt></ruby>与<ruby>生起<rt>shēng qǐ</rt></ruby>（柱微向内倾、角柱升高），举折平缓、出檐深远。脊兽、鸱吻多为后世补塑。殿内佛坛唐塑三十五尊，梁架唐代彩画与题记俱存；殿外祖师塔为唐初（一说北魏遗）亭阁式塔。</p></div>
+    <div class="dim"><span class="tag rel">宗教</span><p>佛光寺属五台山佛教圣地外围（"台外"古刹），唐代为五台山大寺之一。主佛坛奉三主佛（弥勒、释迦、阿弥陀）与文殊、普贤等菩萨胁侍，呈唐代"三佛并坐+菩萨"布局，显教与华严兼修。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>会昌法难重创寺院经济，东大殿由信众宁公遇独资重建，梁上题记"佛殿主女弟子宁公遇"——是唐代民间信仰经济支撑宗教复兴的实物例证。</p></div>
+  </article>
+
+  <article id="yanxi">
+    <h3>阎锡山故居（河边民俗博物馆）</h3>
+    <div class="era">民国 · 阎锡山（1883–1960）· 统治山西近40年（1911–1949）</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/%E9%96%BB%E9%8C%AB%E5%B1%B1%E6%95%85%E5%B1%85%E7%A8%AE%E8%83%BD%E6%B4%9E.jpg/960px-%E9%96%BB%E9%8C%AB%E5%B1%B1%E6%95%85%E5%B1%85%E7%A8%AE%E8%83%BD%E6%B4%9E.jpg" alt="阎锡山故居"><figcaption>阎锡山故居 · 中西合璧的民国建筑群</figcaption></figure>
+    <p class="lead">定位：<b>民国"山西王"的权力与实业缩影</b></p>
+    <div class="dim"><span class="tag his">史政</span><p>阎锡山统治山西近四十年，推行"模范省"自治，抗战时任第二战区司令长官。其故居（实为建筑群）是其政治生命的物化，也是近代地方实力派割据治理的标本。</p></div>
+    <div class="dim"><span class="tag arc">建筑</span><p>二十余院、八百余间，中西合璧——既有传统四合院与砖雕 <ruby>影壁<rt>yǐng bì</rt></ruby>，也有西式门楼与暖气设施，是近代山西民居从传统向近代转型的标本。</p></div>
+    <div class="dim"><span class="tag eco">经济</span><p>阎锡山的省政经济自成体系：修同蒲铁路、办西北实业公司、发省钞，试图把山西建成自给自足的经济体。故居的奢华，正是这套省政经济的副产品。</p></div>
+
+    <div class="knowbox">
+      <h3>阎锡山其人：时期·范围·同侪·评价</h3>
+      <p><b>活动时期</b>：阎锡山（1883–1960），1909年日本陆军士官学校毕业归国；1911年辛亥革命太原起义后被推为山西都督，自此统治山西近四十年，至1949年离晋赴台，1960年病逝台北。其政治生命贯穿北洋、国民政府、抗战、内战四个阶段，是民国在位最久的省政首脑之一。</p>
+      <p><b>活动范围</b>：以山西为核心盘踞（部分时段延及绥远、察哈尔），人称"山西王"。奉行"保境安民"、闭门建设，山西在军阀混战中相对独立安定。抗战时期任第二战区司令长官，辖晋、绥、察，指挥忻口战役、太原会战。</p>
+      <p><b>同级别人物</b>（民国地方实力派）：</p>
+      <ul>
+        <li><b>桂系</b> 李宗仁、白崇禧——盘踞广西，与蒋三分反目又合流。</li>
+        <li><b>东北</b> 张学良——东北易帜，中原大战关键助蒋。</li>
+        <li><b>西北军</b> 冯玉祥——与阎同反蒋（1930年中原大战）。</li>
+        <li><b>其他</b>：滇系龙云、粤系陈济棠、川系刘湘/刘文辉、西北马家马步芳/马鸿逵、新疆盛世才。</li>
+      </ul>
+      <p>1930年中原大战，阎锡山与冯玉祥、李宗仁结成反蒋联盟，阎任"国民政府主席"——是其势力顶峰，败后一度下野。</p>
+      <p><b>历史评价</b>：</p>
+      <ul>
+        <li><b>建设之功</b>：推行"六政三事"（水利、种树、蚕桑、禁烟、天足、剪发；种棉、造林、畜牧），办义务教育（入学率居全国前列）、修同蒲铁路、设西北实业公司，山西被誉为"模范省"，是近代山西现代化的主要推动者。</li>
+        <li><b>割据与保守</b>：长期闭省割据、严控地方，反共坚决；抗战后期持"存在就是一切"的实用主义，与日方时有妥协往来、消极避战，争议颇大。</li>
+        <li><b>总评</b>：务实与保守、建设与割据并存。其"存在主义"——"存在就是一切，一切为了存在"——是周旋于日、蒋、共之间求存的政治底色；既是在夹缝中保境安民的地方实干家，也是终被时代淘汰的旧式军阀。</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<section>
+  <h2>附录</h2>
+  <article id="pingxing">
+    <h3>平型关大捷纪念馆</h3>
+    <div class="era">抗战 · 民国二十六年（1937）八路军115师</div>
+    <figure><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/115D_in_the_Battle_of_Pingxing_Pass.jpg/960px-115D_in_the_Battle_of_Pingxing_Pass.jpg" alt="平型关大捷"><figcaption>平型关大捷 · 八路军115师首胜</figcaption></figure>
+    <div class="dim"><span class="tag his">史政</span><p>1937年9月，八路军115师在平型关伏击日军，歼敌千余，是全面抗战以来中国军队首次大捷。其政治意义远超军事——打破"日军不可战胜"的神话，确立八路军在抗战中的政治声威，也是国共合作抗战的标志性一役。</p></div>
+  </article>
+</section>
+
+<section id="closer" class="closer">
+  <h2 style="border:0;padding:0;margin-bottom:12px">结语：一条线看懂晋北</h2>
+  <p>从北魏到民国，晋北这条线把中国中古以来的几个关键命题——胡与汉、佛与政、战与贸、传统与近代——压缩在一千公里的尺度里。读懂木塔的斗拱力学，便读懂了中国木构的胆识；摸清雁门的关城与互市，便摸清了长城"战与贸一体"的双重性格。史政、建筑、宗教、经济——四条线在这片折叠之地上交织，恰好是半部中国史的索引。</p>
+</section>
+
+</main>
+</div>
+
+<div class="foot">晋北景点文化导览 · 第二版 · 史政·建筑·宗教·经济 + 佛教·诗词 · 图片采自维基共享资源</div>
+
+</body>
+</html>
