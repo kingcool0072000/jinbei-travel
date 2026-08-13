@@ -216,7 +216,7 @@ const PLAN = {
     datong:{name:"大同",coord:[40.086,113.298]},
     huayansi:{name:"华严寺",coord:[40.0865,113.2975]},
     shanhua:{name:"善化寺",coord:[40.0833,113.2964]},
-    yungang:{name:"云冈石窟",coord:[40.110,113.133]},
+    jinhuagong:{name:"晋华宫国家矿山公园",coord:[40.1027,113.1378]},
     datongbwg:{name:"大同博物馆",coord:[40.076,113.335]},
     hunyuan:{name:"浑源",coord:[39.6956,113.7135]},
     xuankong:{name:"悬空寺",coord:[39.6611,113.7158]},
@@ -242,9 +242,9 @@ const PLAN = {
     {n:1,title:"08.13 北京→大同",stay:"住 全季大同魏都大道酒店",move:"北京→大同 约340km 4h",
      body:"上午早出发避开出京拥堵；下午华严寺、善化寺（辽金古建，平地院落台阶少）；傍晚大同古城墙短途散步，不用绕城一圈；晚餐烧麦、刀削面。",
      stops:[["transit","datong","北京→大同 约340km 4h"],["sight","huayansi","华严寺｜辽金古建平地院落"],["sight","shanhua","善化寺｜台阶少"],["food","datong","烧麦·刀削面"],["stay","datonghotel","全季魏都大道｜连住2晚"]]},
-    {n:2,title:"08.14 大同全天·云冈+博物馆",stay:"住 全季大同魏都大道酒店",move:"市内",
-     body:"08:00云冈石窟尽早入园、买观光电瓶车，只游核心洞窟量力而行；中午返回市区午餐+午休避暑；下午大同博物馆（室内凉爽，北魏历史，老少友好）。",
-     stops:[["sight","yungang","云冈石窟｜景区停车场+买观光车"],["sight","datongbwg","大同博物馆｜室内凉爽老少友好"],["stay","datonghotel","全季魏都大道｜不换酒店"]]},
+    {n:2,title:"08.14 大同全天·井下探秘+博物馆",stay:"住 全季大同魏都大道酒店",move:"市内",
+     body:"上午晋华宫国家矿山公园「井下探秘游」——深入矿井体验采煤作业，井下凉爽正合避暑；中午返回市区午餐+午休；下午大同博物馆（室内凉爽，北魏历史，老少友好）。",
+     stops:[["sight","jinhuagong","晋华宫井下探秘游｜国家矿山公园"],["sight","datongbwg","大同博物馆｜室内凉爽老少友好"],["stay","datonghotel","全季魏都大道｜不换酒店"]]},
     {n:3,title:"08.15 大同→浑源",stay:"住 德寿府(浑源古城店)",move:"大同→浑源 70km约1h10",
      body:"上午悬空寺（抢到登临票可慢行参观，无票就在观景台远拍，不强求）；中午浑源县城午餐（凉粉备注免辣）；下午酒店午休；傍晚永安寺、圆觉寺砖塔（县城平地古迹，无需进山，不含恒山）。",
      stops:[["transit","hunyuan","大同→浑源 70km约1h10"],["sight","xuankong","悬空寺｜登临票/观景台远拍"],["sight","yongan","永安寺｜县城平地古迹"],["sight","yuanjue","圆觉寺砖塔｜平地古迹"],["food","hunyuan","浑源凉粉｜备注免辣"],["stay","deshoufu","德寿府｜永安西街87号"]]},
@@ -269,7 +269,7 @@ const PLAN = {
   ],
   segments: [                    // 城际交通段；drive=真实驾车路径(高亮+公里/时间)
     {from:"beijing",to:"datong",mode:"drive",label:"约340km 4h"},
-    {from:"datonghotel",to:"yungang",mode:"drive",label:"酒店→云冈"},
+    {from:"datonghotel",to:"jinhuagong",mode:"drive",label:"酒店→晋华宫"},
     {from:"datong",to:"hunyuan",mode:"drive",label:"70km 1h10"},
     {from:"hunyuan",to:"yingxian",mode:"drive",label:"应县木塔"},
     {from:"yingxian",to:"daixian",mode:"drive",label:"经雁门关"},
@@ -284,7 +284,7 @@ const PLAN = {
   meals: 3500,                   // 餐饮总额（4人7天，随人数缩放）
   mealsBase: 4,                  // 餐饮对应的基准人数
   people: {adults:2, kids:1, elder:1},
-  costNote: "65岁老人+10岁孩子低强度出行；8月正午室内避暑，云冈/雁门关务必买观光车；点餐少盐免辣。交通为自驾油费+过路费（非租车）。",
+  costNote: "65岁老人+10岁孩子低强度出行；8月正午室内避暑，雁门关务必买观光车；点餐少盐免辣。交通为自驾油费+过路费（非租车）。",
   theme: "fresh",                // 默认主题：normal/whitesmoke/fresh/grey/macaron/dark/darkblue
 };
 
